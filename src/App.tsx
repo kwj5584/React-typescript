@@ -52,14 +52,14 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <div>
         <Parent {...this.state} />
-        <button onClick={this._clickToGrandChild}>GrandChild 의 값을 바꾸기</button>
+        <button onClick={this._clickToGrandChild}>GrandChild 값 바꾸기</button>
       </div>
     );
   }
 
   private _clickToGrandChild(): void {
     this.setState({
-      toGrandChild: '그랜드 차일드의 값을 변경'
+      toGrandChild: '그랜드 차일드 값 변경'
     });
   }
 }
