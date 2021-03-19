@@ -1,88 +1,119 @@
 import * as React from 'react';
-
 import './App.css';
 
 export interface AppProps {
-  name : string;
-  company ?: string;
-}
-interface AppState {
-  age:number
 }
 
-class App extends React.Component< AppProps, AppState> {
-  // public state:{age:number}={
-  //   age : 30
-  // } state 방법 1 : state선언만 하기
-  static defaultProps = {
-    company:'Default'
-  };
-  constructor(props:AppProps){
-    console.log('App constructor')
+export interface AppState {
+  toGrandChild: string;
+}
+
+class App extends React.Component<AppProps, AppState> {
+  constructor(props: AppProps) {
+    console.log('App constructor');
     super(props);
-    this._rollback = this._rollback.bind(this);
-    this.state={
-      age:30
-    }
-    setInterval(()=>{
-      this.setState({
-        age:this.state.age +1
-      })
-    },2000);
-  } // state 방법2 : constructor 사용하고 props바인딩
-  componentWillMount(){
-    console.log('App componentwillMount');
+    this.state = {
+      toGrandChild: '아직 안바뀜'
+    };
+    this._clickToGrandChild = this._clickToGrandChild.bind(this);
   }
-  componentDidMount(){
-    // 이 부분에서 api 불러옴
+
+  componentWillMount() {
+    console.log('App componentWillMount');
+  }
+
+  componentDidMount() {
     console.log('App componentDidMount');
   }
-  componentWillUnmount(){
-    console.log("App componentWillUnmount");
-    // clearInterval(this._interval);
+
+  componentWillUnmount() {
+    console.log('App componentWillUnmount');
   }
 
+  componentWillReceiveProps(nextProps: AppProps) {
+    console.log(`App componentWillReceiveProps : ${JSON.stringify(nextProps)}`);
+  }
 
-  render(){
-    console.log('App rendering')
+  shouldComponentUpdate(nextProps: AppProps, nextState: AppState): boolean {
+    console.log(`App shouldComponentUpdate : ${JSON.stringify(nextProps)}, ${JSON.stringify(nextState)}`);
+    return true;
+  }
+
+  componentWillUpdate(nextProps: AppProps, nextState: AppState) {
+    console.log(`App componentWillUpdate : ${JSON.stringify(nextProps)}, ${JSON.stringify(nextState)}`);
+  }
+
+  componentDidUpdate(prevProps: AppProps, prevState: AppState) {
+    console.log(`App componentDidUpdate : ${JSON.stringify(prevProps)}, ${JSON.stringify(prevState)}`);
+  }
+
+  render() {
+    console.log('App render');
     return (
-      <div className="App">
-        {this.props.name}, {this.props.company}, {this.state.age}
-        <button onClick={this._rollback}>회춘</button>
-        <StatelessComponent name="Anna">나는 자식이다.</StatelessComponent>
-        <StatelessComponent1 name="Anna">나는 자식이다.</StatelessComponent1>
+      <div>
+        <Parent {...this.state} />
+        <button onClick={this._clickToGrandChild}>GrandChild 의 값을 바꾸기</button>
       </div>
     );
   }
-  private _rollback():void{
+
+  private _clickToGrandChild(): void {
     this.setState({
-      age: 25
+      toGrandChild: '그랜드 차일드의 값을 변경'
     });
   }
 }
 
+interface ParentProp {
+  toGrandChild: string;
+}
 
-//stateless component (functinal component)
-const StatelessComponent:React.SFC<AppProps> = (props) =>{
-  return(
-    <h2>{props.name}, {props.company}, {props.children}</h2>
+const Parent: React.SFC<ParentProp> = (props) => {
+  return (
+    <div>
+      <p>여긴 Parent</p>
+      <Me {...props} />
+    </div>
   );
 };
 
-StatelessComponent.defaultProps={
-  company:'home'
+interface MeProp {
+  toGrandChild: string;
 }
 
-//stateless component (functinal component)
-const StatelessComponent1:React.SFC<AppProps> = ({name, company='home2', children}) =>{
-  return(
-    <h2>{name}, {company}, {children}</h2>
+const Me: React.SFC<MeProp> = (props) => {
+  return (
+    <div>
+      <p>여긴 Me</p>
+      <Child {...props} />
+    </div>
   );
 };
 
-StatelessComponent.defaultProps={
-  company:'home'
+interface ChildProp {
+  toGrandChild: string;
 }
 
+const Child: React.SFC<ChildProp> = (props) => {
+  return (
+    <div>
+      <p>여긴 Child</p>
+      <GrandChild {...props} />
+    </div>
+  );
+};
+
+interface GrandChildProp {
+  toGrandChild: string;
+}
+
+const GrandChild: React.SFC<GrandChildProp> = (props) => {
+  return (
+    <div>
+      <p>여긴 GrandChild</p>
+      <h3>{props.toGrandChild}</h3>
+    </div>
+  );
+};
 
 export default App;
