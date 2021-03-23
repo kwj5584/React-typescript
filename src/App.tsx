@@ -1,13 +1,16 @@
 import * as React from 'react';
 import './App.css';
 import { BrowserRouter as  Router, Route, Link, RouteComponentProps, Switch, Redirect, NavLink} from 'react-router-dom'
-
+import { Unsubscribe} from 'redux'
+import {addAge} from  './index'
+import * as PropTypes from 'prop-types';
 // export interface AppProps {
 // }
 
 // export interface AppState {
 //   toGrandChild: string;
 // }
+
 
 const Home = () =>{
   return(
@@ -56,6 +59,19 @@ const Admin = () =>{
 }
 
 class App extends React.Component<{}, {}> {
+  public static contextTypes = {
+    store : PropTypes.object
+  }
+  private _unsubscribe!: Unsubscribe;
+  componentDidMount(){
+    const store = this.context.store;
+    this._unsubscribe = store.subscribe(()=>{
+      this.forceUpdate();
+    })
+  }
+  componentWillUnmount(){
+    this._unsubscribe();
+  }
   // constructor(props: AppProps) {
   //   console.log('App constructor');
   //   super(props);
@@ -93,16 +109,25 @@ class App extends React.Component<{}, {}> {
   // componentDidUpdate(prevProps: AppProps, prevState: AppState) {
   //   console.log(`App componentDidUpdate : ${JSON.stringify(prevProps)}, ${JSON.stringify(prevState)}`);
   // }
-
+  
   render() {
+    const store = this.context.store;
+    const state = store.getState();
     // console.log('App render');
     return (
+      
       // <div>
       //   <Parent {...this.state} />
       //   <button onClick={this._clickToGrandChild}>GrandChild 값 바꾸기</button>
       // </div>
         <Router>
           <div>
+            <div>
+            {state.age} 
+            <button onClick={()=>{
+              store.dispatch(addAge());
+            }}>1년 뒤</button>
+            </div>
             <nav>
               <ul>
                 <li><NavLink exact activeStyle={ {fontSize:24}} to ="/">홈</NavLink></li>
