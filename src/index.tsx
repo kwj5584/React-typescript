@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import {createStore,Store} from 'redux'
-import * as Proptypes from 'prop-types'
+import AppContainer from './App'
+import {createStore} from 'redux'
+import {Provider} from 'react-redux'
+
 const ADD_AGE = "ADD_AGE";
 
 export function addAge():{type:string;} {
@@ -23,34 +25,14 @@ function ageApp(state : {age:number}= {age :35}, action: {type : 'ADD_AGE'}){
   return state;
 }
 
-const store : Store<{age:number}> = createStore(ageApp);
-
-class Provider extends React.Component<{store :Store<{age:number;}>},{}>{
-  static childContextTypes = {
-    store : Proptypes.object
-  }
-  getChildContext(){
-    return{
-      store:this.props.store
-    }
-  }
-  render(){
-    return this.props.children as JSX.Element;
-  }
-}
-
-
-
+const store = createStore(ageApp);
 
 ReactDOM.render(
   <Provider store = {store}>
-    <App />
+    <AppContainer />
   </Provider>,
     document.getElementById('root')
   );
-
-
-
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
